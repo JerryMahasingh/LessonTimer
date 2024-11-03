@@ -8,6 +8,8 @@ const urlsToCache = [
     '/images/logo.png' // Include any images you want to cache
 ];
 
+navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
+
 // Install event: Cache resources
 self.addEventListener('install', (event) => {
     console.log('Service Worker installing...');
