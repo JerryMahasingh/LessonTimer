@@ -75,20 +75,47 @@
                     width: 40px; /* Adjust input width for smaller screens */
                 }
             }
+
+            .input-group {
+                margin: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px; /* Space between each label/input pair */
+            }
+
+            label {
+                display: block; /* Ensures the label starts on a new line */
+                margin-bottom: 5px; /* Space between label and input */
+            }
+
+            input {
+                width: 100%; /* Full width of the container */
+                padding: 8px; /* Padding inside the input fields */
+                box-sizing: border-box; /* Include padding in total width */
+            }
+
         </style>
     </head>
     
 <body>
     <h1>Schedule Editor 4</h1>
     <div class="input-group">
-        <label>Start Time:</label>
-        <input type="time" id="school-start-time">
-        <label>Lesson Duration (min):</label>
-        <input type="number" id="lesson-duration" min="1">
-        <label>Break Duration (min):</label>
-        <input type="number" id="break-duration" min="1">
+        <div class="form-group">
+            <label for="school-start-time">Start Time:</label>
+            <input type="time" id="school-start-time">
+        </div>
+        <div class="form-group">
+            <label for="lesson-duration">Lesson Duration (min):</label>
+            <input type="number" id="lesson-duration" min="1">
+        </div>
+        <div class="form-group">
+            <label for="break-duration">Break Duration (min):</label>
+            <input type="number" id="break-duration" min="1">
+        </div>
         <button onclick="saveSettings()">Save Settings</button>
     </div>
+    
 
     <h2>Weekly Schedule</h2>
     <table class="schedule-table">
