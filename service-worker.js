@@ -1,14 +1,12 @@
-const CACHE_NAME = 'lesson-timer-cache-v1'; // Version your cache for easy updates
+const CACHE_NAME = 'lesson-timer-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
     '/scheduler.html',
-    '/styles.css',  // Add any additional files here
-    '/script.js',    // Include your JavaScript files if needed
-    '/images/logo.png' // Include any images you want to cache
+    '/styles.css',
+    '/script.js',
+    '/images/logo.png'
 ];
-
-navigator.serviceWorker.register('/service-worker.js', { scope: '/' });
 
 // Install event: Cache resources
 self.addEventListener('install', (event) => {
@@ -41,12 +39,19 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: Serve cached content or fetch from network
 self.addEventListener('fetch', (event) => {
-    console.log('Fetching:', event.request.url);
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
-        })
-    );
+    if (event.request.url.includes('.json')) {
+        // Network-first strategy for JSON files
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(event.request))
+        );
+    } else {
+        // Cache-first strategy for other resources
+        event.respondWith(
+            caches.match(event.request).then((response) => {
+                return response || fetch(event.request);
+            }).catch(() => caches.match('/offline.html')) // Offline fallback
+        );
+    }
 });
 
 // Message event: Handle messages from the client
