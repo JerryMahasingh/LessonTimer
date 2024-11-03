@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px auto;
+            text-align: center;
+            max-width: 500px;
+        }
+        .input-group label {
+            margin-right: 10px;
+        }
+        .input-group input {
+            width: 50px;
+            margin-right: 15px;
+        }
+        .schedule-table {
+            margin: 20px auto;
+            width: 90%;
+            border-collapse: collapse;
+        }
+        .schedule-table, .schedule-table th, .schedule-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .schedule-table th {
+            background-color: #f2f2f2;
+        }
+        .editable-cell {
+            text-align: center;
+        }
+ 	.button-container {
+            margin-top: 20px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Schedule Editor</h1>
+    <div class="input-group">
+        <label>Start Time:</label>
+        <input type="time" id="school-start-time">
+        <label>Lesson Duration (min):</label>
+        <input type="number" id="lesson-duration" min="1">
+        <label>Break Duration (min):</label>
+        <input type="number" id="break-duration" min="1">
+        <button onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <h2>Weekly Schedule</h2>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>Lesson Number</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+            </tr>
+        </thead>
+        <tbody id="schedule-body">
+            <!-- Rows for lessons will be populated here -->
+        </tbody>
+    </table>
+
+    <button onclick="saveWeeklySchedule()">Save Weekly Schedule</button>
+    <div class="button-container">
+        <button onclick="location.href='index.html'">Back to Index</button>
+    </div>
+
+    <script>
+        const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+        let weeklySchedule = JSON.parse(localStorage.getItem("weeklySchedule")) || {};
+
+        function loadSettings() {
+            const startTime = localStorage.getItem("schoolStartTime");
+            const lessonDuration = localStorage.getItem("lessonDuration");
+            const breakDuration = localStorage.getItem("breakDuration");
+
+            if (startTime) {
+                document.getElementById("school-start-time").value = startTime;
+            }
+            if (lessonDuration) {
+                document.getElementById("lesson-duration").value = lessonDuration;
+            }
+            if (breakDuration) {
+                document.getElementById("break-duration").value = breakDuration;
+            }
+        }
+
+        function loadWeeklySchedule() {
+            const scheduleBody = document.getElementById("schedule-body");
+            scheduleBody.innerHTML = "";
+
+            for (let lessonNumber = 1; lessonNumber <= 7; lessonNumber++) {
+                const row = document.createElement("tr");
+
+                const lessonCell = document.createElement("td");
+                lessonCell.textContent = `Lesson ${lessonNumber}`;
+                row.appendChild(lessonCell);
+
+                daysOfWeek.forEach(day => {
+                    const cell = document.createElement("td");
+                    cell.classList.add("editable-cell");
+
+                    const subjectInput = document.createElement("input");
+                    subjectInput.type = "text";
+                    subjectInput.placeholder = "Subject";
+                    subjectInput.value = weeklySchedule[day]?.[`Lesson ${lessonNumber}`]?.subject || "";
+                    subjectInput.onchange = () => updateWeeklySchedule(day, lessonNumber, "subject", subjectInput.value);
+
+                    const classInput = document.createElement("input");
+                    classInput.type = "text";
+                    classInput.placeholder = "Class";
+                    classInput.value = weeklySchedule[day]?.[`Lesson ${lessonNumber}`]?.class || "";
+                    classInput.onchange = () => updateWeeklySchedule(day, lessonNumber, "class", classInput.value);
+
+                    cell.appendChild(subjectInput);
+                    cell.appendChild(document.createElement("br"));
+                    cell.appendChild(classInput);
+                    row.appendChild(cell);
+                });
+
+                scheduleBody.appendChild(row);
+            }
+        }
+
+        function updateWeeklySchedule(day, lessonNumber, field, value) {
+            if (!weeklySchedule[day]) {
+                weeklySchedule[day] = {};
+            }
+            if (!weeklySchedule[day][`Lesson ${lessonNumber}`]) {
+                weeklySchedule[day][`Lesson ${lessonNumber}`] = { subject: "", class: "" };
+            }
+            weeklySchedule[day][`Lesson ${lessonNumber}`][field] = value;
+        }
+
+        function saveSettings() {
+            const startTime = document.getElementById("school-start-time").value;
+            const lessonDuration = parseInt(document.getElementById("lesson-duration").value);
+            const breakDuration = parseInt(document.getElementById("break-duration").value);
+
+            localStorage.setItem("schoolStartTime", startTime);
+            localStorage.setItem("lessonDuration", lessonDuration);
+            localStorage.setItem("breakDuration", breakDuration);
+
+            alert("Schedule settings saved!");
+        }
+
+        function saveWeeklySchedule() {
+            localStorage.setItem("weeklySchedule", JSON.stringify(weeklySchedule));
+            alert("Weekly schedule saved!");
+        }
+
+        window.onload = function() {
+            loadSettings();
+            loadWeeklySchedule();
+        };
+    </script>
+</body>
+</html>

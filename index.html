@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Timer with Subject and Class Indicators</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .timer-container {
+            margin-top: 20px;
+        }
+        .session {
+            margin-bottom: 20px;
+            text-align: left;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 5px;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background-color: #4caf50;
+            transition: width 1s linear;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        .time-info {
+            font-size: 1em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .current-time {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1em;
+            color: #333;
+            text-align: center;
+            width: 100%;
+            display: none;
+        }
+        .button-container {
+            margin: 20px auto;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>School Timer with Subject and Class Indicators</h1>
+
+  <div class="current-date" id="current-date"></div>    
+  
+  <div class="timer-container" id="timer-container"></div>
+    
+    <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <div class="button-container">
+        <button onclick="location.href='scheduler.html'">Go to Scheduler</button>
+    </div>
+
+    <script>
+
+        // Display current date in the format "Monday, 4 November 2024"
+        const dateElement = document.getElementById("current-date");
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('nl-NL', options);
+
+
+        // Weekly schedule data stored in localStorage
+        let weeklySchedule = JSON.parse(localStorage.getItem('weeklySchedule')) || {};
+
+        function applySettings() {
+            const startTimeInput = localStorage.getItem("schoolStartTime") || "07:30"; // Default start time
+            const lessonDuration = parseInt(localStorage.getItem("lessonDuration")) || 35; // Default lesson duration
+            const breakDuration = parseInt(localStorage.getItem("breakDuration")) || 25; // Default break duration
+
+            let [startHour, startMinute] = startTimeInput.split(":").map(Number);
+            const schoolStartTime = new Date();
+            schoolStartTime.setHours(startHour, startMinute, 0, 0);
+
+            // Define schedule with break after the fourth lesson
+            schedule = [
+                { session: "Lesson 1", duration: lessonDuration },
+                { session: "Lesson 2", duration: lessonDuration },
+                { session: "Lesson 3", duration: lessonDuration },
+                { session: "Lesson 4", duration: lessonDuration },
+                { session: "Break", duration: breakDuration },
+                { session: "Lesson 5", duration: lessonDuration },
+                { session: "Lesson 6", duration: lessonDuration },
+                { session: "Lesson 7", duration: lessonDuration }
+            ];
+
+            createScheduleDisplay(schoolStartTime);
+        }
+
+        function createScheduleDisplay(schoolStartTime) {
+            const timerContainer = document.getElementById("timer-container");
+            timerContainer.innerHTML = ""; // Reset container
+            let currentTime = new Date(schoolStartTime);
+
+            schedule.forEach((session, index) => {
+                const endTime = new Date(currentTime.getTime() + session.duration * 60000);
+                
+                const sessionDiv = document.createElement("div");
+                sessionDiv.classList.add("session");
+
+                // Get subject and class information from the weekly schedule
+                const dayOfWeek = new Date().toLocaleString('en-us', { weekday: 'long' }).toLowerCase();
+                const lessonInfo = weeklySchedule[dayOfWeek] && weeklySchedule[dayOfWeek][session.session] 
+                    ? weeklySchedule[dayOfWeek][session.session] 
+                    : { subject: "No Subject", class: "No Class" };
+
+                sessionDiv.innerHTML = `
+                    <div><strong>${session.session}</strong> - ${lessonInfo.subject} (${lessonInfo.class})</div>
+                    <div class="time-info">
+                        <span>${formatTime(currentTime)}</span>
+                        <span>${formatTime(endTime)}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-inner" id="progress-bar-${index}">0%</div>
+                    </div>
+                    <div class="current-time" id="current-time-${index}">--:--</div>
+                `;
+                timerContainer.appendChild(sessionDiv);
+
+                session.startTime = new Date(currentTime);
+                session.endTime = new Date(endTime);
+                currentTime = new Date(endTime); // Update for the next session
+            });
+
+            updateProgressBars(); // Start progress bar updates
+        }
+
+        function updateProgressBars() {
+            setInterval(() => {
+                const now = new Date();
+                schedule.forEach((session, index) => {
+                    const progressBar = document.getElementById(`progress-bar-${index}`);
+                    const currentTimeDisplay = document.getElementById(`current-time-${index}`);
+                    
+                    if (now >= session.startTime && now <= session.endTime) {
+                        const elapsed = (now - session.startTime) / 1000;
+                        const duration = (session.endTime - session.startTime) / 1000;
+                        const progressPercent = (elapsed / duration) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+                        progressBar.textContent = `${Math.floor(progressPercent)}%`;
+
+                        // Display current time on the active lesson
+                        currentTimeDisplay.style.display = "block";
+                        currentTimeDisplay.textContent = formatTime(now);
+                        currentTimeDisplay.style.left = `${progressPercent}%`;
+                        currentTimeDisplay.style.transform = 'translateX(-50%)';
+                    } else {
+                        progressBar.style.width = now > session.endTime ? "100%" : "0%";
+                        currentTimeDisplay.style.display = "none";
+                    }
+                });
+            }, 1000);
+        }
+
+        function formatTime(date) {
+            return date.toTimeString().substring(0, 5);
+        }
+
+        // Load settings on startup
+        applySettings(); // Initialize with saved settings
+    </script>
+</body>
+</html>
