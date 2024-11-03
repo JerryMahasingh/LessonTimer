@@ -1,77 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Editor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .input-group {
-            margin: 20px auto;
-            text-align: center;
-            max-width: 500px;
-        }
-        .input-group label {
-            margin-right: 10px;
-        }
-        .input-group input {
-            width: 50px;
-            margin-right: 15px;
-        }
-        .schedule-table {
-            margin: 20px auto;
-            width: 90%;
-            border-collapse: collapse;
-            overflow-x: auto; /* Enable horizontal scrolling if necessary */
-        }
-        .schedule-table, .schedule-table th, .schedule-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left; /* Align text to the left */
-        }
-        .schedule-table th {
-            background-color: #f2f2f2;
-            position: sticky; /* Make header sticky */
-            top: 0; /* Stick to the top of the table */
-            z-index: 1; /* Ensure header is above other content */
-        }
-        /* Make the first column sticky */
-        .schedule-table td:first-child, .schedule-table th:first-child {
-            position: sticky; /* Sticky positioning for the first column */
-            left: 0; /* Stick to the left of the table */
-            background-color: #fff; /* White background for visibility */
-            z-index: 2; /* Ensure it appears above other content */
-        }
-        .editable-cell {
-            text-align: center;
-        }
-        .button-container {
-            margin-top: 20px;
-        }
-        .button-container button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        /* Responsive styles */
-        @media (max-width: 600px) {
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Schedule Editor</title>
+        <style>
             body {
-                font-size: 14px; /* Smaller font size for mobile */
+                font-family: Arial, sans-serif;
+                text-align: center;
+                margin: 0; /* Remove default margin */
             }
-            .schedule-table th, .schedule-table td {
-                padding: 6px; /* Reduce padding on small screens */
+            .input-group {
+                margin: 20px auto;
+                text-align: center;
+                max-width: 500px;
+            }
+            .input-group label {
+                margin-right: 10px;
             }
             .input-group input {
-                width: 40px; /* Adjust input width for smaller screens */
+                width: 50px;
+                margin-right: 15px;
             }
-        }
-    </style>
-</head>
-
+            .schedule-table {
+                margin: 20px auto;
+                width: 100%; /* Full width for smaller screens */
+                border-collapse: collapse;
+                overflow-x: auto; /* Enable horizontal scrolling if necessary */
+                display: block; /* Make it a block element for scrolling */
+            }
+            .schedule-table, .schedule-table th, .schedule-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left; /* Align text to the left */
+            }
+            .schedule-table th {
+                background-color: #f2f2f2;
+                position: sticky; /* Make header sticky */
+                top: 0; /* Stick to the top of the table */
+                z-index: 1; /* Ensure header is above other content */
+            }
+            /* Make the first column sticky */
+            .schedule-table td:first-child, .schedule-table th:first-child {
+                position: sticky; /* Sticky positioning for the first column */
+                left: 0; /* Stick to the left of the table */
+                background-color: #fff; /* White background for visibility */
+                z-index: 2; /* Ensure it appears above other content */
+            }
+            .editable-cell {
+                text-align: center;
+            }
+            .button-container {
+                margin-top: 20px;
+            }
+            .button-container button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+            /* Responsive styles */
+            @media (max-width: 600px) {
+                body {
+                    font-size: 14px; /* Smaller font size for mobile */
+                }
+                .schedule-table th, .schedule-table td {
+                    padding: 6px; /* Reduce padding on small screens */
+                }
+                .schedule-table {
+                    display: block; /* Prevent shrinking on small devices */
+                    overflow-x: auto; /* Enable scrolling */
+                    white-space: nowrap; /* Prevent line breaking */
+                }
+                .input-group input {
+                    width: 40px; /* Adjust input width for smaller screens */
+                }
+            }
+        </style>
+    </head>
+    
 <body>
     <h1>Schedule Editor 1</h1>
     <div class="input-group">
