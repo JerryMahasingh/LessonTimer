@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +9,21 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
         }
         .timer-container {
             margin-top: 20px;
+            max-width: 90%; /* Make the container responsive */
+            margin: 20px auto; /* Center the container */
         }
         .session {
             margin-bottom: 20px;
             text-align: left;
-            max-width: 500px;
-            margin: 0 auto 20px;
+            max-width: 100%; /* Allow session to be full width on small screens */
+            margin: 0 auto 20px; /* Center align with auto margin */
             position: relative;
+            padding: 15px; /* Add padding for touch devices */
         }
         .progress-bar {
             width: 100%;
@@ -52,14 +58,33 @@
         }
         .button-container {
             margin: 20px auto;
+            display: flex; /* Use flexbox for buttons */
+            flex-direction: column; /* Stack buttons vertically */
+            align-items: center; /* Center buttons */
         }
         .button-container button {
-            padding: 10px 20px;
-            font-size: 16px;
+            width: 100%; /* Make buttons full-width on small screens */
+            padding: 10px; /* Keep button padding */
+            font-size: 16px; /* Ensure buttons are readable */
             cursor: pointer;
+            margin-bottom: 10px; /* Space between buttons */
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px; /* Smaller font size for mobile */
+            }
+            .session {
+                padding: 10px; /* Reduce padding on small screens */
+            }
+            .button-container button {
+                font-size: 16px; /* Ensure buttons are easy to tap */
+            }
         }
     </style>
 </head>
+
 <body>
     <h1>Lesson Timer with Subject and Class</h1>
 
