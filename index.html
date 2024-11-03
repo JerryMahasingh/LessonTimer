@@ -10,21 +10,21 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 0; /* Remove default margin */
-            padding: 0; /* Remove default padding */
+            margin: 0;
+            padding: 0;
         }
         .timer-container {
             margin-top: 20px;
-            max-width: 90%; /* Make the container responsive */
-            margin: 20px auto; /* Center the container */
+            max-width: 90%;
+            margin: 20px auto;
         }
         .session {
             margin-bottom: 20px;
             text-align: left;
-            max-width: 100%; /* Allow session to be full width on small screens */
-            margin: 0 auto 20px; /* Center align with auto margin */
+            max-width: 100%;
+            margin: 0 auto 20px;
             position: relative;
-            padding: 15px; /* Add padding for touch devices */
+            padding: 15px;
         }
         .progress-bar {
             width: 100%;
@@ -59,77 +59,82 @@
         }
         .button-container {
             margin: 20px auto;
-            display: flex; /* Use flexbox for buttons */
-            flex-direction: column; /* Stack buttons vertically */
-            align-items: center; /* Center buttons */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .button-container button {
-            width: 100%; /* Make buttons full-width on small screens */
-            padding: 10px; /* Keep button padding */
-            font-size: 16px; /* Ensure buttons are readable */
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
             cursor: pointer;
-            margin-bottom: 10px; /* Space between buttons */
+            margin-bottom: 10px;
         }
 
-        /* Media Queries for Responsiveness */
         @media (max-width: 600px) {
             body {
-                font-size: 14px; /* Smaller font size for mobile */
+                font-size: 14px;
             }
             .session {
-                padding: 10px; /* Reduce padding on small screens */
+                padding: 10px;
             }
             .button-container button {
-                font-size: 16px; /* Ensure buttons are easy to tap */
+                font-size: 16px;
             }
         }
-        
+
         #install-button {
-        padding: 10px 20px;
-        font-size: 16px;
-        color: #fff;
-        background-color: #4caf50;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Hide install button on larger screens */
+        @media (min-width: 768px) {
+            #install-button {
+                display: none;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>Lesson Timer with Subject and Class 3</h1>
+    <h1>Lesson Timer with Subject and Class Indicators</h1>
 
-  <div class="current-date" id="current-date"></div>    
-  
-  <div class="timer-container" id="timer-container"></div>
+    <div class="current-date" id="current-date"></div>    
+
+    <div class="timer-container" id="timer-container"></div>
     
     <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
     <div class="button-container">
         <button onclick="location.href='scheduler.html'">Go to Scheduler</button>
     </div>
-    <button id="install-button" style="display: none;">Install App</button>
-    <script>
+    <button id="install-button">Install App</button>
 
+    <script>
         // Display current date in the format "Monday, 4 November 2024"
         const dateElement = document.getElementById("current-date");
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         dateElement.textContent = new Date().toLocaleDateString('nl-NL', options);
 
-
         // Weekly schedule data stored in localStorage
         let weeklySchedule = JSON.parse(localStorage.getItem('weeklySchedule')) || {};
 
         function applySettings() {
-            const startTimeInput = localStorage.getItem("schoolStartTime") || "07:30"; // Default start time
-            const lessonDuration = parseInt(localStorage.getItem("lessonDuration")) || 35; // Default lesson duration
-            const breakDuration = parseInt(localStorage.getItem("breakDuration")) || 25; // Default break duration
+            const startTimeInput = localStorage.getItem("schoolStartTime") || "07:30";
+            const lessonDuration = parseInt(localStorage.getItem("lessonDuration")) || 35;
+            const breakDuration = parseInt(localStorage.getItem("breakDuration")) || 25;
 
             let [startHour, startMinute] = startTimeInput.split(":").map(Number);
             const schoolStartTime = new Date();
             schoolStartTime.setHours(startHour, startMinute, 0, 0);
 
-            // Define schedule with break after the fourth lesson
             schedule = [
                 { session: "Lesson 1", duration: lessonDuration },
                 { session: "Lesson 2", duration: lessonDuration },
@@ -146,7 +151,7 @@
 
         function createScheduleDisplay(schoolStartTime) {
             const timerContainer = document.getElementById("timer-container");
-            timerContainer.innerHTML = ""; // Reset container
+            timerContainer.innerHTML = "";
             let currentTime = new Date(schoolStartTime);
 
             schedule.forEach((session, index) => {
@@ -155,7 +160,6 @@
                 const sessionDiv = document.createElement("div");
                 sessionDiv.classList.add("session");
 
-                // Get subject and class information from the weekly schedule
                 const dayOfWeek = new Date().toLocaleString('en-us', { weekday: 'long' }).toLowerCase();
                 const lessonInfo = weeklySchedule[dayOfWeek] && weeklySchedule[dayOfWeek][session.session] 
                     ? weeklySchedule[dayOfWeek][session.session] 
@@ -176,10 +180,10 @@
 
                 session.startTime = new Date(currentTime);
                 session.endTime = new Date(endTime);
-                currentTime = new Date(endTime); // Update for the next session
+                currentTime = new Date(endTime);
             });
 
-            updateProgressBars(); // Start progress bar updates
+            updateProgressBars();
         }
 
         function updateProgressBars() {
@@ -196,7 +200,6 @@
                         progressBar.style.width = `${progressPercent}%`;
                         progressBar.textContent = `${Math.floor(progressPercent)}%`;
 
-                        // Display current time on the active lesson
                         currentTimeDisplay.style.display = "block";
                         currentTimeDisplay.textContent = formatTime(now);
                         currentTimeDisplay.style.left = `${progressPercent}%`;
@@ -213,43 +216,40 @@
             return date.toTimeString().substring(0, 5);
         }
 
-        // Load settings on startup
-        applySettings(); // Initialize with saved settings
-        
+        applySettings();
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, (error) => {
-                console.log('ServiceWorker registration failed: ', error);
+                navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, (error) => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
             });
-            });
-        } 
-        
-        
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    const installButton = document.getElementById('install-button');
-    installButton.style.display = 'block';
-
-    installButton.addEventListener('click', () => {
-        deferredPrompt.prompt();
-
-        deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-        } else {
-            console.log('User dismissed the install prompt');
         }
-        deferredPrompt = null;
+
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            const installButton = document.getElementById('install-button');
+            installButton.style.display = 'block';
+
+            installButton.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }, { once: true });
         });
-    });
-    });
     </script>
 </body>
 </html>
