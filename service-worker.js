@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lesson-timer-cache-v2';
+const CACHE_NAME = 'lesson-timer-cache-v3';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -43,7 +43,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
             // Use cache if available, otherwise fetch from network
-            return response || fetch(event.request);
+            return response || fetch(event.request).catch(() => {
+                console.warn(`Network request failed for ${event.request.url}`);
+                // Optional: return a placeholder or a cached default if network fails
+            });
         })
     );
 });
