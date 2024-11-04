@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lesson-timer-cache-v3';
+const CACHE_NAME = 'lesson-timer-cache-v4';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -40,15 +40,26 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: Serve cached content or fetch from network
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            // Use cache if available, otherwise fetch from network
-            return response || fetch(event.request).catch(() => {
-                console.warn(`Network request failed for ${event.request.url}`);
-                // Optional: return a placeholder or a cached default if network fails
-            });
-        })
-    );
+    if (event.request.mode === 'navigate') {
+        // If it's a navigation request (like a page refresh), try cache first for index.html
+        event.respondWith(
+            caches.match('/index.html').then((cachedResponse) => {
+                return cachedResponse || fetch(event.request).catch(() => {
+                    console.warn('Failed to fetch; serving cached index.html as fallback');
+                    return caches.match('/index.html');
+                });
+            })
+        );
+    } else {
+        // For non-navigation requests, apply cache-first strategy
+        event.respondWith(
+            caches.match(event.request).then((response) => {
+                return response || fetch(event.request).catch(() => {
+                    console.warn(`Network request failed for ${event.request.url}`);
+                });
+            })
+        );
+    }
 });
 
 // Message event: Handle messages from the client
